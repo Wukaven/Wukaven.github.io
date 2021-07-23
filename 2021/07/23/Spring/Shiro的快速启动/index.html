@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+
+
+<html lang="en">
+  
+
+    <head>
+      <meta charset="utf-8" />
+        
+      <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1, maximum-scale=1"
+      />
+      <title>Shiro的快速启动 |  一叶随风</title>
+  <meta name="generator" content="hexo-theme-ayer">
+      
+      <link rel="shortcut icon" href="/favicon.ico" />
+       
+<link rel="stylesheet" href="/dist/main.css">
+
+      <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/Shen-Yu/cdn/css/remixicon.min.css"
+      />
+      
+<link rel="stylesheet" href="/css/custom.css">
+ 
+      <script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script>
+       
+ 
+
+      <!-- mermaid -->
+      
+    </head>
+  </html>
+</html>
+
+
+<body>
+  <div id="app">
+    
+      
+    <main class="content on">
+      <section class="outer">
+  <article
+  id="post-Spring/Shiro的快速启动"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h1 class="article-title sea-center" style="border-left:0" itemprop="name">
+  Shiro的快速启动
+</h1>
+ 
+
+      
+    </header>
+     
+    <div class="article-meta">
+      <a href="/2021/07/23/Spring/Shiro%E7%9A%84%E5%BF%AB%E9%80%9F%E5%90%AF%E5%8A%A8/" class="article-date">
+  <time datetime="2021-07-23T02:20:41.712Z" itemprop="datePublished">2021-07-23</time>
+</a> 
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/shiro/">shiro</a>
+  </div>
+  
+<div class="word_count">
+    <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="ri-quill-pen-line"></i>
+            <span class="post-meta-item-text"> Word count:</span>
+            <span class="post-count">2.5k</span>
+        </span>
+    </span>
+
+    <span class="post-time">
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="ri-book-open-line"></i>
+            <span class="post-meta-item-text"> Reading time≈</span>
+            <span class="post-count">10 min</span>
+        </span>
+    </span>
+</div>
+ 
+    </div>
+      
+    <div class="tocbot"></div>
+
+
+
+
+  
+    <div class="article-entry" itemprop="articleBody">
+       
+  <p>Apache Shiro的设计目标，是通过直觉化的设计，来简化程序安全开发，并且简单易用。Shiro核心设计模型符合大众对程序安全的理解—-程序的安全存在于人（或其它任何东西）和系统交互的上下文环境中.<br><strong>Shiro的默认实现中，包含如下：</strong><br>授权、鉴权、session管理、cache管理、Realm管理、事件传播、Rmember Me服务、Subject创建、登出及更多、</p>
+<span id="more"></span>
+<h2 id="Shiro架构有三个主要的概念：Subject，SecurityManager、Realm"><a href="#Shiro架构有三个主要的概念：Subject，SecurityManager、Realm" class="headerlink" title="Shiro架构有三个主要的概念：Subject，SecurityManager、Realm"></a>Shiro架构有三个主要的概念：<strong>Subject，SecurityManager、Realm</strong></h2><p>Subject :相当于门户，程序安全视角的user。Subject 的实例都绑定在SecurityManager上。当你和subject交互时，都是由SecurityManager来进行转换的。  </p>
+<p>SecurityManager：SecurityManager是Shiro架构的核心，他扮演着伞对象的角色（持有各组件引用，协调调用），来协调它内部的安全组件，他们一块来形成对象视图。然而，一旦程序中的SecurityManager和他内部对象已经配置好，通常上就不用再管他，程序的开发人员几乎大部分时间都会花在Subject API上。当你和Subject交互时，所做的任何Subject的安全操作，实际上是SecurityManager在幕后辛苦劳作。   </p>
+<p>Realms：Realms在Shiro和你的程序安全数据之间，扮演着桥梁或者连接器的角色。当和安全相关数据有交互时，比如用户登录校验和鉴权，Shiro通过程序中配置的一个或者多个Realm来查询。 </p>
+<h2 id="一、四大基石—-身份验证，授权，会话管理，加密"><a href="#一、四大基石—-身份验证，授权，会话管理，加密" class="headerlink" title="一、四大基石—-身份验证，授权，会话管理，加密"></a>一、四大基石—-身份验证，授权，会话管理，加密</h2><p>1.Authentication：身份认证/登录，验证用户是不是拥有相应的身份；</p>
+<p>2.Authorization：授权，即权限验证，验证某个已认证的用户是否拥有某个权限；即判断用户是否能做事情，常见的如：验证某个用户是否拥有某个角色。或者细粒度的验证某个用户对某个资源是否具有某个权限；</p>
+<p>3.Session Manager：会话管理，即用户登录后就是一次会话，在没有退出之前，它的所有信息都在会话中；会话可以是普通JavaSE环境的，也可以是如Web环境的；</p>
+<p>4.Cryptography：加密，保护数据的安全性，如密码加密存储到数据库，而不是明文存储；</p>
+<h1 id="二、快速开始"><a href="#二、快速开始" class="headerlink" title="二、快速开始"></a>二、快速开始</h1><p>shiro主要拥有三个角色 Subject，SecurityManager、Realm。</p>
+<ol>
+<li> 引入依赖，编写shiroConfig</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br></pre></td><td class="code"><pre><span class="line">@Configuration</span><br><span class="line">public class ShiroConfig &#123;</span><br><span class="line">    /**</span><br><span class="line">     * ShiroFilterFactoryBean 处理拦截资源文件问题。</span><br><span class="line">     * Filter Chain定义说明 1、一个URL可以配置多个Filter，使用逗号分隔 2、当设置多个过滤器时，全部验证通过，才视为通过</span><br><span class="line">     * 3、部分过滤器可指定参数，如perms，roles</span><br><span class="line">     *</span><br><span class="line">     */</span><br><span class="line">    @Bean</span><br><span class="line">    public ShiroFilterFactoryBean shirFilter(SecurityManager securityManager) &#123;</span><br><span class="line">        ShiroFilterFactoryBean shiroFilterFactoryBean = new ShiroFilterFactoryBean();</span><br><span class="line"></span><br><span class="line">        // 必须设置 SecurityManager</span><br><span class="line">        shiroFilterFactoryBean.setSecurityManager(securityManager);</span><br><span class="line"></span><br><span class="line">        // 如果不设置默认会自动寻找Web工程根目录下的&quot;/login.jsp&quot;页面</span><br><span class="line">        shiroFilterFactoryBean.setLoginUrl(&quot;/login&quot;);</span><br><span class="line">        // 设置登录成功后要跳转的链接</span><br><span class="line">        shiroFilterFactoryBean.setSuccessUrl(&quot;/index&quot;);</span><br><span class="line">        // 设置未授权界面;</span><br><span class="line">        shiroFilterFactoryBean.setUnauthorizedUrl(&quot;/403&quot;);</span><br><span class="line"></span><br><span class="line">        // 拦截器.</span><br><span class="line">        Map&lt;String, String&gt; filterChainDefinitionMap = new LinkedHashMap&lt;String, String&gt;();</span><br><span class="line">        //# 配置不会被拦截的链接 顺序判断 有多重默认的过滤器</span><br><span class="line">        filterChainDefinitionMap.put(&quot;/static/**&quot;, &quot;anon&quot;);</span><br><span class="line">        filterChainDefinitionMap.put(&quot;/ajaxLogin&quot;, &quot;anon&quot;);</span><br><span class="line"></span><br><span class="line">        // 配置退出过滤器,其中的具体的退出代码Shiro已经替我们实现了</span><br><span class="line">        filterChainDefinitionMap.put(&quot;/logout&quot;, &quot;logout&quot;);</span><br><span class="line">        #添加</span><br><span class="line">        filterChainDefinitionMap.put(&quot;/add&quot;, &quot;perms[权限添加]&quot;);</span><br><span class="line"></span><br><span class="line">        // &lt;!-- 过滤链定义，从上向下顺序执行，一般将 /**放在最为下边 --&gt;:这是一个坑呢，一不小心代码就不好使了;</span><br><span class="line">        // &lt;!-- authc:所有url都必须认证通过才可以访问; anon:所有url都都可以匿名访问--&gt;</span><br><span class="line">        filterChainDefinitionMap.put(&quot;/**&quot;, &quot;authc&quot;);</span><br><span class="line"></span><br><span class="line">        shiroFilterFactoryBean.setFilterChainDefinitionMap(filterChainDefinitionMap);</span><br><span class="line">        System.out.println(&quot;Shiro拦截器工厂类注入成功&quot;);</span><br><span class="line">        return shiroFilterFactoryBean;</span><br><span class="line">    &#125;</span><br><span class="line">    @Bean        # 管理器</span><br><span class="line">    public SecurityManager securityManager() &#123;</span><br><span class="line">        DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager();</span><br><span class="line">        // 设置realm.</span><br><span class="line">        securityManager.setRealm(myShiroRealm());</span><br><span class="line">        return securityManager;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * 身份认证realm; (这个需要自己写，账号密码校验；权限等)</span><br><span class="line">     * </span><br><span class="line">     * @return</span><br><span class="line">     */</span><br><span class="line">    @Bean</span><br><span class="line">    public MyShiroRealm myShiroRealm() &#123;</span><br><span class="line">        MyShiroRealm myShiroRealm = new MyShiroRealm();</span><br><span class="line">        return myShiroRealm;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">#  shiro中常见的过滤器 支持Ant风格</span><br><span class="line">#  anon，authcBasic，auchc，user 是认证过滤器。</span><br><span class="line">#  perms，roles，ssl，rest，port 是授权过滤器。</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">* anon---------------org.apache.shiro.web.filter.authc.AnonymousFilter 没有参数，表示可以匿名使用。</span><br><span class="line">* authc--------------org.apache.shiro.web.filter.authc.FormAuthenticationFilter 表示需要认证(登录)才能使用，没有参数</span><br><span class="line">* authcBasic---------org.apache.shiro.web.filter.authc.BasicHttpAuthenticationFilter 没有参数表示httpBasic认证</span><br><span class="line">* logout-------------org.apache.shiro.web.filter.authc.LogoutFilter</span><br><span class="line">* noSessionCreation--org.apache.shiro.web.filter.session.NoSessionCreationFilter</span><br><span class="line">* perms--------------org.apache.shiro.web.filter.authz.PermissionAuthorizationFilter 参数可以写多个，多个时必须加上引号，并且参数之间用逗号分割，例如/admins/user/**=perms[&quot;user:add:*,user:modify:*&quot;]，当有多个参数时必须每个参数都通过才通过，想当于isPermitedAll()方法。</span><br><span class="line">* port---------------org.apache.shiro.web.filter.authz.PortFilter port[8081],当请求的url的端口不是8081是跳转到schemal://serverName:8081?queryString,其中schmal是协议http或https等，serverName是你访问的host,8081是url配置里port的端口，queryString是你访问的url里的？后面的参数。</span><br><span class="line">* rest---------------org.apache.shiro.web.filter.authz.HttpMethodPermissionFilter 根据请求的方法，相当于/admins/user/**=perms[user:method] ,其中method为post，get，delete等。</span><br><span class="line">* roles--------------org.apache.shiro.web.filter.authz.RolesAuthorizationFilter 参数可以写多个，多个时必须加上引号，并且参数之间用逗号分割，当有多个参数时，例如admins/user/**=roles[&quot;admin,guest&quot;],每个参数通过才算通过，相当于hasAllRoles()方法。</span><br><span class="line">* ssl----------------org.apache.shiro.web.filter.authz.SslFilter 没有参数，表示安全的url请求，协议为https</span><br><span class="line">* user---------------org.apache.shiro.web.filter.authz.UserFilter 没有参数表示必须存在用户，当登入操作时不做检查</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li> 编写shiroRealm类</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"># 继承这个类</span><br><span class="line">public class ShiroRealm extends AuthorizingRealm &#123;</span><br><span class="line"></span><br><span class="line">	@Resource</span><br><span class="line">	private UserRepository userRepository;</span><br><span class="line"></span><br><span class="line">    #    // 授权...   获取用户角色和权限</span><br><span class="line">	protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection pc) &#123;</span><br><span class="line">		System.out.println(&quot;shiro 授权管理...&quot;);</span><br><span class="line">		SimpleAuthorizationInfo authorizationInfo = new SimpleAuthorizationInfo();</span><br><span class="line">		// 根据当前登录用户 查询对应角色和权限</span><br><span class="line">		Subject subject = SecurityUtils.getSubject();</span><br><span class="line">		User user = (User) subject.getPrincipal();</span><br><span class="line">		// 调用业务层，查询角色</span><br><span class="line">		List&lt;Role&gt; roles = roleService.findByUser(user);</span><br><span class="line">		for (Role role : roles) &#123;</span><br><span class="line">			authorizationInfo.addRole(role.getKeyword());</span><br><span class="line">		&#125;</span><br><span class="line">		// 调用业务层，查询权限</span><br><span class="line">		List&lt;Permission&gt; permissions = permissionService.findByUser(user);</span><br><span class="line">		for (Permission permission : permissions) &#123;</span><br><span class="line">			authorizationInfo.addStringPermission(permission.getKeyword());</span><br><span class="line">		&#125;</span><br><span class="line">		return authorizationInfo;</span><br><span class="line">	&#125;</span><br><span class="line">————————————————</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">	/**</span><br><span class="line">	 * 登录认证  # 参数的token跟control认证的token相对应</span><br><span class="line">	 */</span><br><span class="line">	@Override</span><br><span class="line">	protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException &#123;</span><br><span class="line">		String userName = (String) token.getPrincipal();</span><br><span class="line">		String password = new String((char[]) token.getCredentials());</span><br><span class="line"></span><br><span class="line">		System.out.println(&quot;用户&quot; + userName + &quot;认证-----ShiroRealm.doGetAuthenticationInfo&quot;);</span><br><span class="line">		User user = userRepository.findByName(userName);</span><br><span class="line">		if (user == null) &#123;</span><br><span class="line">			throw new UnknownAccountException(&quot;用户名错误！&quot;);</span><br><span class="line">		&#125;</span><br><span class="line">	</span><br><span class="line">    # 这里存的user可以通过subject来获取</span><br><span class="line">    #当返回用户密码时，securityManager安全管理器，自动比较返回密码和用户输入密码是否一致 如果密码一致 登录成功， 如果密码不一致 报密码错误异常</span><br><span class="line">		SimpleAuthenticationInfo info = new SimpleAuthenticationInfo(user, password, getName());</span><br><span class="line">		return info;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<ol start="3">
+<li> 编写control</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">public String login() &#123;</span><br><span class="line">		// 用户名和密码 都保存在model中</span><br><span class="line">		// 基于shiro实现登录</span><br><span class="line">		Subject subject = SecurityUtils.getSubject();</span><br><span class="line"> </span><br><span class="line">		// 用户名和密码信息</span><br><span class="line">		AuthenticationToken token = new UsernamePasswordToken(</span><br><span class="line">				model.getUsername(), model.getPassword());</span><br><span class="line">		try &#123;</span><br><span class="line">			subject.login(token);</span><br><span class="line">			#// 登录成功将用户信息 保存到 Session</span><br><span class="line">			return SUCCESS;</span><br><span class="line">		&#125; catch (AuthenticationException e) &#123;</span><br><span class="line">			// 登录失败</span><br><span class="line">			e.printStackTrace();</span><br><span class="line">			return LOGIN;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+<h1 id="三、整合thymleaf"><a href="#三、整合thymleaf" class="headerlink" title="三、整合thymleaf"></a>三、整合thymleaf</h1><p>引入标签库&lt; %@ taglib prefix=”shiro” uri=”<a target="_blank" rel="noopener" href="http://shiro.apache.org/tags&quot;">http://shiro.apache.org/tags&quot;</a> %&gt;</p>
+<p><img src="https://files.mdnice.com/user/11714/cae9b19d-0e72-4dfd-8b44-120bbdf96ad1.png"></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><span class="line">下面一一介绍Shiro的标签： </span><br><span class="line"></span><br><span class="line">#  guest标签 验证当前用户是否为“访客”，即未认证（包含未记住）的用户。</span><br><span class="line"></span><br><span class="line">&lt;shiro:guest&gt;  </span><br><span class="line">Hi there!  Please &lt;a href=&quot;login.jsp&quot;&gt;Login&lt;/a&gt; or &lt;a href=&quot;signup.jsp&quot;&gt;Signup&lt;/a&gt; today!  </span><br><span class="line">&lt;/shiro:guest&gt;</span><br><span class="line"></span><br><span class="line">#  user标签 认证通过或已记住的用户。</span><br><span class="line"></span><br><span class="line">&lt;shiro:user&gt; </span><br><span class="line">    Welcome back John!  Not John? Click &lt;a href=&quot;login.jsp&quot;&gt;here&lt;a&gt; to login.  </span><br><span class="line">&lt;/shiro:user&gt;</span><br><span class="line"></span><br><span class="line">#  authenticated标签 已认证通过的用户。不包含已记住的用户，这是与user标签的区别所在。 </span><br><span class="line"></span><br><span class="line">&lt;shiro:authenticated&gt;  </span><br><span class="line">    &lt;a href=&quot;updateAccount.jsp&quot;&gt;Update your contact information&lt;/a&gt;.  </span><br><span class="line">&lt;/shiro:authenticated&gt;</span><br><span class="line"></span><br><span class="line">#  notAuthenticated标签 未认证通过用户，与authenticated标签相对应。与guest标签的区别是，该标签包含已记住用户。 </span><br><span class="line"></span><br><span class="line">&lt;shiro:notAuthenticated&gt; </span><br><span class="line">    Please &lt;a href=&quot;login.jsp&quot;&gt;login&lt;/a&gt; in order to update your credit card information.  </span><br><span class="line">&lt;/shiro:notAuthenticated&gt;</span><br><span class="line"></span><br><span class="line">#  principal 标签 输出当前用户信息，通常为登录帐号信息。</span><br><span class="line"></span><br><span class="line">Hello, &lt;shiro:principal/&gt;, how are you today?  </span><br><span class="line"></span><br><span class="line">#  hasRole标签 验证当前用户是否属于该角色。</span><br><span class="line"></span><br><span class="line">&lt;shiro:hasRole name=&quot;administrator&quot;&gt;  </span><br><span class="line">    &lt;a href=&quot;admin.jsp&quot;&gt;Administer the system&lt;/a&gt;  </span><br><span class="line">&lt;/shiro:hasRole&gt;</span><br><span class="line"></span><br><span class="line">#  lacksRole标签 与hasRole标签逻辑相反，当用户不属于该角色时验证通过。</span><br><span class="line"></span><br><span class="line">&lt;shiro:lacksRole name=&quot;administrator&quot;&gt;  </span><br><span class="line">    Sorry, you are not allowed to administer the system.  </span><br><span class="line">&lt;/shiro:lacksRole&gt;</span><br><span class="line"></span><br><span class="line">#  hasAnyRole标签 验证当前用户是否属于以下任意一个角色。 </span><br><span class="line">&lt;shiro:hasAnyRoles name=&quot;developer, project manager, administrator&quot;&gt;  </span><br><span class="line">    You are either a developer, project manager, or administrator.  </span><br><span class="line">&lt;/shiro:lacksRole&gt;</span><br><span class="line"></span><br><span class="line">#  hasPermission标签 验证当前用户是否拥有指定权限。</span><br><span class="line"></span><br><span class="line">&lt;shiro:hasPermission name=&quot;user:create&quot;&gt;  </span><br><span class="line">    &lt;a href=&quot;createUser.jsp&quot;&gt;Create a new User&lt;/a&gt;  </span><br><span class="line">&lt;/shiro:hasPermission&gt;</span><br><span class="line"></span><br><span class="line">#  lacksPermission标签 与hasPermission标签逻辑相反，当前用户没有制定权限时，验证通过。</span><br><span class="line"></span><br><span class="line">&lt;shiro:hasPermission name=&quot;user:create&quot;&gt;  </span><br><span class="line">    &lt;a href=&quot;createUser.jsp&quot;&gt;Create a new User&lt;/a&gt;  </span><br><span class="line">&lt;/shiro:hasPermission&gt;</span><br></pre></td></tr></table></figure>
+
+
+<h1 id="Apache-Shiro-权限控制（小结）"><a href="#Apache-Shiro-权限控制（小结）" class="headerlink" title="Apache Shiro 权限控制（小结）"></a>Apache Shiro 权限控制（小结）</h1><p>第一种：URL 级别粗粒度权限控制 配置 web.xml 的 shiroFilter 拦截 /*  在 spring 的 applicationContext*.xml 配置文件中配置同名 bean，配置 filterChainDefinitions 拦截控制规则  </p>
+<p>xxx.html* = anon （未登录可以访问）  </p>
+<p>xxx.html* =authc （必须登录才能访问 ）  </p>
+<p>xxx.html* = perms[权限] （需要特定权限才能访问）</p>
+<p> xxx.html* = roles[角色] （需要特定角色才能访问 ） <br> <br>第二种： 方法级别细粒度权限控制  在 spring 的 applicationContext*.xml 配置 spring aop 对 spring 管理 bean 对象开启 shiro 注解支持  </p>
+<p>@RequiresPermissions(权限)  需要特定权限才能访问  </p>
+<p>@RequiresRoles(角色)  需要特定角色才能访问  </p>
+<p>@RequiresAuthentication 需要认证才能访问  <br> <br>第三种：通过 shiro 自定义标签，实现页面元素显示控制  </p>
+<p>&lt; shiro:authenticated&gt; 登录后才能访问  </p>
+<p>&lt;shiro:hasPermission name=”abc”&gt; 需要特定权限才能访问  </p>
+<p>&lt;shiro:hasRole name=”abc”&gt; 需要特定角色才能访问 </p>
+ 
+      <!-- reward -->
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <div class="declare">
+      <ul class="post-copyright">
+        <li>
+          <i class="ri-copyright-line"></i>
+          <strong>Copyright： </strong>
+          
+          Copyright is owned by the author. For commercial reprints, please contact the author for authorization. For non-commercial reprints, please indicate the source.
+          
+        </li>
+      </ul>
+    </div>
+    
+    <footer class="article-footer">
+       
+<div class="share-btn">
+      <span class="share-sns share-outer">
+        <i class="ri-share-forward-line"></i>
+        分享
+      </span>
+      <div class="share-wrap">
+        <i class="arrow"></i>
+        <div class="share-icons">
+          
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="ri-weibo-fill"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="ri-wechat-fill"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="ri-qq-fill"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="ri-douban-line"></i>
+          </a>
+          <!-- <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a> -->
+          
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="ri-facebook-circle-fill"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="ri-twitter-fill"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="ri-google-fill"></i>
+          </a>
+        </div>
+      </div>
+</div>
+
+<div class="wx-share-modal">
+    <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://example.com/2021/07/23/Spring/Shiro%E7%9A%84%E5%BF%AB%E9%80%9F%E5%90%AF%E5%8A%A8/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div id="share-mask"></div>  
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/shiro/" rel="tag">shiro</a></li></ul>
+
+    </footer>
+  </div>
+
+   
+  <nav class="article-nav">
+    
+      <a href="/2021/07/23/Spring/Spring%20Date%20JPA%20/" class="article-nav-link">
+        <strong class="article-nav-caption">上一篇</strong>
+        <div class="article-nav-title">
+          
+            Spring Date JPA
+          
+        </div>
+      </a>
+    
+    
+      <a href="/2021/07/23/Spring/mybatis-plus%E7%9A%84%E9%80%86%E5%90%91%E5%B7%A5%E7%A8%8B/" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">mybatis-plus的逆向工程</div>
+      </a>
+    
+  </nav>
+
+   
+<!-- valine评论 -->
+<div id="vcomments-box">
+  <div id="vcomments"></div>
+</div>
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js"></script>
+<script>
+  new Valine({
+    el: "#vcomments",
+    app_id: "",
+    app_key: "",
+    path: window.location.pathname,
+    avatar: "monsterid",
+    placeholder: "给我的文章加点评论吧~",
+    recordIP: true,
+  });
+  const infoEle = document.querySelector("#vcomments .info");
+  if (infoEle && infoEle.childNodes && infoEle.childNodes.length > 0) {
+    infoEle.childNodes.forEach(function (item) {
+      item.parentNode.removeChild(item);
+    });
+  }
+</script>
+<style>
+  #vcomments-box {
+    padding: 5px 30px;
+  }
+
+  @media screen and (max-width: 800px) {
+    #vcomments-box {
+      padding: 5px 0px;
+    }
+  }
+
+  #vcomments-box #vcomments {
+    background-color: #fff;
+  }
+
+  .v .vlist .vcard .vh {
+    padding-right: 20px;
+  }
+
+  .v .vlist .vcard {
+    padding-left: 10px;
+  }
+</style>
+
+ 
+   
+     
+</article>
+
+</section>
+      <footer class="footer">
+  <div class="outer">
+    <ul>
+      <li>
+        Copyrights &copy;
+        2015-2021
+        <i class="ri-heart-fill heart_icon"></i> John Doe
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+        
+        
+        Powered by <a href="https://hexo.io" target="_blank">Hexo</a>
+        <span class="division">|</span>
+        Theme - <a href="https://github.com/Shen-Yu/hexo-theme-ayer" target="_blank">Ayer</a>
+        
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+        
+        <span>
+  <span><i class="ri-user-3-fill"></i>Visitors:<span id="busuanzi_value_site_uv"></span></span>
+  <span class="division">|</span>
+  <span><i class="ri-eye-fill"></i>Views:<span id="busuanzi_value_page_pv"></span></span>
+</span>
+        
+      </li>
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      <li>
+        <!-- cnzz统计 -->
+        
+        <script type="text/javascript" src='https://s9.cnzz.com/z_stat.php?id=1278069914&amp;web_id=1278069914'></script>
+        
+      </li>
+    </ul>
+  </div>
+</footer>
+      <div class="float_btns">
+        <div class="totop" id="totop">
+  <i class="ri-arrow-up-line"></i>
+</div>
+
+<div class="todark" id="todark">
+  <i class="ri-moon-line"></i>
+</div>
+
+      </div>
+    </main>
+    <aside class="sidebar on">
+      <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/images/ayer-side.svg" alt="一叶随风"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">主页</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/archives">归档</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/categories">分类</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/tags">标签</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/tags/%E6%97%85%E8%A1%8C/">旅行</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" target="_blank" rel="noopener" href="http://shenyu-vip.lofter.com">摄影</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/friends">友链</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/2019/about">关于我</a>
+    </li>
+    
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      
+      <a class="nav-item-link nav-item-search"  title="Search">
+        <i class="ri-search-line"></i>
+      </a>
+      
+      
+      <a class="nav-item-link" target="_blank" href="/atom.xml" title="RSS Feed">
+        <i class="ri-rss-line"></i>
+      </a>
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+    </aside>
+    <div id="mask"></div>
+
+<!-- #reward -->
+<div id="reward">
+  <span class="close"><i class="ri-close-line"></i></span>
+  <p class="reward-p"><i class="ri-cup-line"></i>请我喝杯咖啡吧~</p>
+  <div class="reward-box">
+    
+    <div class="reward-item">
+      <img class="reward-img" src="https://cdn.jsdelivr.net/gh/Shen-Yu/cdn/img/alipay.jpg">
+      <span class="reward-type">支付宝</span>
+    </div>
+    
+    
+    <div class="reward-item">
+      <img class="reward-img" src="https://cdn.jsdelivr.net/gh/Shen-Yu/cdn/img/wechat.jpg">
+      <span class="reward-type">微信</span>
+    </div>
+    
+  </div>
+</div>
+    
+<script src="/js/jquery-2.0.3.min.js"></script>
+ 
+<script src="/js/lazyload.min.js"></script>
+
+<!-- Tocbot -->
+ 
+<script src="/js/tocbot.min.js"></script>
+
+<script>
+  tocbot.init({
+    tocSelector: ".tocbot",
+    contentSelector: ".article-entry",
+    headingSelector: "h1, h2, h3, h4, h5, h6",
+    hasInnerContainers: true,
+    scrollSmooth: true,
+    scrollContainer: "main",
+    positionFixedSelector: ".tocbot",
+    positionFixedClass: "is-position-fixed",
+    fixedSidebarOffset: "auto",
+  });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.js"></script>
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.css"
+/>
+<script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js"></script>
+
+<script src="/dist/main.js"></script>
+
+<!-- ImageViewer -->
+ <!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" style="display:none" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css">
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"></script>
+
+<script>
+    function viewer_init() {
+        let pswpElement = document.querySelectorAll('.pswp')[0];
+        let $imgArr = document.querySelectorAll(('.article-entry img:not(.reward-img)'))
+
+        $imgArr.forEach(($em, i) => {
+            $em.onclick = () => {
+                // slider展开状态
+                // todo: 这样不好，后面改成状态
+                if (document.querySelector('.left-col.show')) return
+                let items = []
+                $imgArr.forEach(($em2, i2) => {
+                    let img = $em2.getAttribute('data-idx', i2)
+                    let src = $em2.getAttribute('data-target') || $em2.getAttribute('src')
+                    let title = $em2.getAttribute('alt')
+                    // 获得原图尺寸
+                    const image = new Image()
+                    image.src = src
+                    items.push({
+                        src: src,
+                        w: image.width || $em2.width,
+                        h: image.height || $em2.height,
+                        title: title
+                    })
+                })
+                var gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, {
+                    index: parseInt(i)
+                });
+                gallery.init()
+            }
+        })
+    }
+    viewer_init()
+</script> 
+<!-- MathJax -->
+
+<!-- Katex -->
+
+<!-- busuanzi  -->
+ 
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+ 
+<!-- ClickLove -->
+
+<!-- ClickBoom1 -->
+
+<!-- ClickBoom2 -->
+
+<!-- CodeCopy -->
+ 
+<link rel="stylesheet" href="/css/clipboard.css">
+ <script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
+<script>
+  function wait(callback, seconds) {
+    var timelag = null;
+    timelag = window.setTimeout(callback, seconds);
+  }
+  !function (e, t, a) {
+    var initCopyCode = function(){
+      var copyHtml = '';
+      copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+      copyHtml += '<i class="ri-file-copy-2-line"></i><span>COPY</span>';
+      copyHtml += '</button>';
+      $(".highlight .code pre").before(copyHtml);
+      $(".article pre code").before(copyHtml);
+      var clipboard = new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        let $btn = $(e.trigger);
+        $btn.addClass('copied');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-checkbox-circle-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPIED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-checkbox-circle-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+      clipboard.on('error', function(e) {
+        e.clearSelection();
+        let $btn = $(e.trigger);
+        $btn.addClass('copy-failed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-time-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPY FAILED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-time-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+    }
+    initCopyCode();
+  }(window, document);
+</script>
+ 
+<!-- CanvasBackground -->
+
+<script>
+  if (window.mermaid) {
+    mermaid.initialize({ theme: "forest" });
+  }
+</script>
+
+
+    
+  </div>
+</body>
+
+</html>

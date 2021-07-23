@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+
+
+<html lang="en">
+  
+
+    <head>
+      <meta charset="utf-8" />
+        
+      <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1, maximum-scale=1"
+      />
+      <title>mybatis-plus的快速启动 |  一叶随风</title>
+  <meta name="generator" content="hexo-theme-ayer">
+      
+      <link rel="shortcut icon" href="/favicon.ico" />
+       
+<link rel="stylesheet" href="/dist/main.css">
+
+      <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/Shen-Yu/cdn/css/remixicon.min.css"
+      />
+      
+<link rel="stylesheet" href="/css/custom.css">
+ 
+      <script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script>
+       
+ 
+
+      <!-- mermaid -->
+      
+    </head>
+  </html>
+</html>
+
+
+<body>
+  <div id="app">
+    
+      
+    <main class="content on">
+      <section class="outer">
+  <article
+  id="post-Spring/mybatis-plus快速开始"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h1 class="article-title sea-center" style="border-left:0" itemprop="name">
+  mybatis-plus的快速启动
+</h1>
+ 
+
+      
+    </header>
+     
+    <div class="article-meta">
+      <a href="/2021/07/23/Spring/mybatis-plus%E5%BF%AB%E9%80%9F%E5%BC%80%E5%A7%8B/" class="article-date">
+  <time datetime="2021-07-23T02:20:41.642Z" itemprop="datePublished">2021-07-23</time>
+</a> 
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/mybatis-plus/">mybatis-plus</a>
+  </div>
+  
+<div class="word_count">
+    <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="ri-quill-pen-line"></i>
+            <span class="post-meta-item-text"> Word count:</span>
+            <span class="post-count">1.8k</span>
+        </span>
+    </span>
+
+    <span class="post-time">
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="ri-book-open-line"></i>
+            <span class="post-meta-item-text"> Reading time≈</span>
+            <span class="post-count">7 min</span>
+        </span>
+    </span>
+</div>
+ 
+    </div>
+      
+    <div class="tocbot"></div>
+
+
+
+
+  
+    <div class="article-entry" itemprop="articleBody">
+       
+  <p>MyBatis-Plus (opens new window)（简称 MP）是一个 MyBatis (opens new window) 的增强工具，在 MyBatis 的基础上只做增强不做改变，为简化开发、提高效率而生。<a target="_blank" rel="noopener" href="https://mybatis.plus/guide/">MyBatis-Plus官网</a></p>
+<span id="more"></span>
+
+<h2 id="快速开始"><a href="#快速开始" class="headerlink" title="快速开始"></a>快速开始</h2><h3 id="初始化工程"><a href="#初始化工程" class="headerlink" title="初始化工程"></a>初始化工程</h3><ul>
+<li> log4j.properties </li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"># 全局日志配置 </span><br><span class="line">log4j.rootLogger=INFO, stdout </span><br><span class="line"># MyBatis 日志配置 </span><br><span class="line">log4j.logger.cn.tulingxueyuan=truce </span><br><span class="line"># 控制台输出 </span><br><span class="line">log4j.appender.stdout=org.apache.log4j.ConsoleAppender</span><br><span class="line">log4j.appender.stdout.layout=org.apache.log4j.PatternLayout </span><br><span class="line">log4j.appender.stdout.layout.ConversionPattern=%5p [%t] ‐ %m%n</span><br></pre></td></tr></table></figure>
+
+<p>添加依赖 mybatis-plus-boot-starter</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">@Data  创建user表</span><br><span class="line">public class User &#123;</span><br><span class="line">    private Long id;</span><br><span class="line">    private String name;</span><br><span class="line">    private Integer age;</span><br><span class="line">    private String email;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//创建mapper 继承BaseMapper&lt;User&gt; 自动生成CRUD操作</span><br><span class="line">public interface UserMapper extends BaseMapper&lt;User&gt; &#123;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//结果测试</span><br><span class="line">@SpringBootTest</span><br><span class="line">public class SampleTest &#123;</span><br><span class="line"></span><br><span class="line">    @Autowired</span><br><span class="line">    private UserMapper userMapper;</span><br><span class="line"></span><br><span class="line">    @Test</span><br><span class="line">    public void testSelect() &#123;</span><br><span class="line">        System.out.println((&quot;----- selectAll method test ------&quot;));</span><br><span class="line">        List&lt;User&gt; userList = userMapper.selectList(null);</span><br><span class="line">        Assert.assertEquals(5, userList.size());</span><br><span class="line">        userList.forEach(System.out::println);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="mybatis-plus的核心功能"><a href="#mybatis-plus的核心功能" class="headerlink" title="mybatis-plus的核心功能"></a>mybatis-plus的核心功能</h2><h3 id="条件构造器"><a href="#条件构造器" class="headerlink" title="条件构造器"></a>条件构造器</h3><ul>
+<li> 使用 Wrapper 自定义SQL</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">val queryWrapper = KtQueryWrapper(User()).eq(User::name, &quot;sss&quot;).eq(User::roleId, &quot;sss2&quot;)</span><br><span class="line">userMapper!!.selectList(queryWrapper)</span><br><span class="line"></span><br><span class="line">val updateConditionWrapper = KtUpdateWrapper(User()).eq(User::name, &quot;sss&quot;).eq(User::roleId, &quot;sss2&quot;)</span><br><span class="line">val updateRecord = User()</span><br><span class="line">updateRecord.name = &quot;newName&quot;</span><br><span class="line">userMapper!!.update(updateRecord, updateConditionWrapper)</span><br><span class="line"></span><br><span class="line">val updateRecord = User()</span><br><span class="line">updateRecord.id = 2</span><br><span class="line">updateRecord.name = &quot;haha&quot;</span><br><span class="line">userMapper.updateById(updateRecord)</span><br></pre></td></tr></table></figure>
+
+<h3 id="分页插件"><a href="#分页插件" class="headerlink" title="分页插件"></a>分页插件</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">//Spring boot方式</span><br><span class="line">@Configuration</span><br><span class="line">@MapperScan(&quot;com.baomidou.cloud.service.*.mapper*&quot;)</span><br><span class="line">public class MybatisPlusConfig &#123;</span><br><span class="line"></span><br><span class="line">    // 旧版</span><br><span class="line">    @Bean</span><br><span class="line">    public PaginationInterceptor paginationInterceptor() &#123;</span><br><span class="line">        PaginationInterceptor paginationInterceptor = new PaginationInterceptor();</span><br><span class="line">        // 设置请求的页面大于最大页后操作， true调回到首页，false 继续请求  默认false</span><br><span class="line">        // paginationInterceptor.setOverflow(false);</span><br><span class="line">        // 设置最大单页限制数量，默认 500 条，-1 不受限制</span><br><span class="line">        // paginationInterceptor.setLimit(500);</span><br><span class="line">        // 开启 count 的 join 优化,只针对部分 left join</span><br><span class="line">        paginationInterceptor.setCountSqlParser(new JsqlParserCountOptimize(true));</span><br><span class="line">        return paginationInterceptor;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    // 最新版</span><br><span class="line">    @Bean</span><br><span class="line">    public MybatisPlusInterceptor mybatisPlusInterceptor() &#123;</span><br><span class="line">        MybatisPlusInterceptor interceptor = new MybatisPlusInterceptor();</span><br><span class="line">        interceptor.addInnerInterceptor(new PaginationInnerInterceptor(DbType.H2));</span><br><span class="line">        return interceptor;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Sequence主键策略"><a href="#Sequence主键策略" class="headerlink" title="Sequence主键策略"></a>Sequence主键策略</h3><ul>
+<li> 主键生成策略</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">主键生成策略必须使用INPUT</span><br><span class="line">支持父类定义@KeySequence子类继承使用</span><br><span class="line">支持主键类型指定(3.3.0开始自动识别主键类型)</span><br><span class="line">内置支持：</span><br><span class="line">DB2KeyGenerator</span><br><span class="line">H2KeyGenerator</span><br><span class="line">KingbaseKeyGenerator</span><br><span class="line">OracleKeyGenerator</span><br><span class="line">PostgreKeyGenerator</span><br><span class="line">如果内置支持不满足你的需求，可实现IKeyGenerator接口来进行扩展.</span><br><span class="line"></span><br><span class="line">@KeySequence(value = &quot;SEQ_ORACLE_STRING_KEY&quot;, clazz = String.class)</span><br><span class="line">public class YourEntity &#123;</span><br><span class="line">    </span><br><span class="line">    @TableId(value = &quot;ID_STR&quot;, type = IdType.INPUT)</span><br><span class="line">    private String idStr;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>使用的配置</strong></p>
+<ul>
+<li> springBoot的配置</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">//第一种方式</span><br><span class="line">      @Bean</span><br><span class="line">      public IKeyGenerator keyGenerator() &#123;</span><br><span class="line">          return new H2KeyGenerator();</span><br><span class="line">      &#125;</span><br><span class="line">//第二种方式</span><br><span class="line">@Bean</span><br><span class="line">public MybatisPlusPropertiesCustomizer plusPropertiesCustomizer() &#123;</span><br><span class="line">    return plusProperties -&gt; plusProperties.getGlobalConfig().getDbConfig().setKeyGenerator(new H2KeyGenerator());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="自定义ID生成器"><a href="#自定义ID生成器" class="headerlink" title="自定义ID生成器"></a>自定义ID生成器</h3><p>自3.3.0开始,默认使用雪花算法+UUID(不含中划线)</p>
+<ul>
+<li> Springboot方式</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">//第一种： 声明bean供spring扫描注入</span><br><span class="line">@Component</span><br><span class="line">public class CustomIdGenerator implements IdentifierGenerator &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public Long nextId(Object entity) &#123;</span><br><span class="line">      	//可以将当前传入的class全类名来作为bizKey,或者提取参数来生成bizKey进行分布式Id调用生成.</span><br><span class="line">      	String bizKey = entity.getClass().getName();</span><br><span class="line">        //根据bizKey调用分布式ID生成</span><br><span class="line">        long id = ....;</span><br><span class="line">      	//返回生成的id值即可.</span><br><span class="line">        return id;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">//第二种  使用配置类</span><br><span class="line">@Bean</span><br><span class="line">public IdentifierGenerator idGenerator() &#123;</span><br><span class="line">    return new CustomIdGenerator();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//第三种 通过MybatisPlusPropertiesCustomizer自定义</span><br><span class="line">@Bean</span><br><span class="line">public MybatisPlusPropertiesCustomizer plusPropertiesCustomizer() &#123;</span><br><span class="line">    return plusProperties -&gt; plusProperties.getGlobalConfig().setIdentifierGenerator(new CustomIdGenerator());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="mybatis-plus扩展–插件"><a href="#mybatis-plus扩展–插件" class="headerlink" title="mybatis-plus扩展–插件"></a>mybatis-plus扩展–插件</h2><h3 id="逻辑删除"><a href="#逻辑删除" class="headerlink" title="逻辑删除"></a>逻辑删除</h3><ul>
+<li> 说明<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">填充原理是直接给entity的属性设置值!!!</span><br><span class="line">注解则是指定该属性在对应情况下必有值,如果无值则入库会是null</span><br><span class="line">MetaObjectHandler提供的默认方法的策略均为:如果属性有值则不覆盖,如果填充值为null则不填充</span><br><span class="line">字段必须声明TableField注解,属性fill选择对应策略,该声明告知Mybatis-Plus需要预留注入SQL字段</span><br><span class="line">填充处理器MyMetaObjectHandler在 Spring Boot 中需要声明@Component或@Bean注入</span><br><span class="line">要想根据注解FieldFill.xxx和字段名以及字段类型来区分必须使用父类的strictInsertFill或者strictUpdateFill方法</span><br><span class="line">不需要根据任何来区分可以使用父类的fillStrategy方法</span><br></pre></td></tr></table></figure></li>
+<li> 步骤1：配置application.yml<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mybatis-plus:</span><br><span class="line">  global-config:</span><br><span class="line">    db-config:</span><br><span class="line">      logic-delete-field: flag  # 全局逻辑删除的实体字段名(since 3.3.0,配置后可以忽略不配置步骤2)</span><br><span class="line">      logic-delete-value: 1 # 逻辑已删除值(默认为 1)</span><br><span class="line">      logic-not-delete-value: 0 # 逻辑未删除值(默认为 0)</span><br><span class="line"></span><br></pre></td></tr></table></figure></li>
+<li> 步骤2：实体类字段上加上@TableLogic的注解</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">@TableLogic</span><br><span class="line">private Integer deleted;</span><br></pre></td></tr></table></figure>
+<ul>
+<li> 开启测试</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">//  如何insert </span><br><span class="line">          字段在数据库定义默认值(推荐)</span><br><span class="line">          insert 前自己 set 值</span><br><span class="line">          使用自动填充功能</span><br><span class="line"></span><br><span class="line">//  删除接口自动填充功能失效</span><br><span class="line">使用 update 方法并: UpdateWrapper.set(column, value)(推荐)</span><br><span class="line">使用 update 方法并: UpdateWrapper.setSql(&quot;column=value&quot;)</span><br><span class="line">使用Sql注入器注入com.baomidou.mybatisplus.extension.injector.methods.LogicDeleteByIdWithFill并使用(推荐)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+
+<h3 id="自动填充"><a href="#自动填充" class="headerlink" title="自动填充"></a>自动填充</h3><p>实现元对象处理器接口：com.baomidou.mybatisplus.core.handlers.MetaObjectHandler<br>注解填充字段 @TableField(.. fill = FieldFill.INSERT) 生成器策略部分也可以配置</p>
+<ul>
+<li><p> pojo中给需要自动填充的字段中添加标签</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">public class User &#123;</span><br><span class="line">    // 注意！这里需要标记为填充字段</span><br><span class="line">    @TableField(.. fill = FieldFill.INSERT)</span><br><span class="line">    private String fillField;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p> 然后自定义实现拦截器类</p>
+</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">@Slf4j</span><br><span class="line">@Component</span><br><span class="line">public class MyMetaObjectHandler implements MetaObjectHandler &#123;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void insertFill(MetaObject metaObject) &#123;</span><br><span class="line">        log.info(&quot;start insert fill ....&quot;);</span><br><span class="line">        this.strictInsertFill(metaObject, &quot;createTime&quot;, LocalDateTime.class, LocalDateTime.now()); // 起始版本 3.3.0(推荐使用)</span><br><span class="line">        // 或者</span><br><span class="line">        this.strictInsertFill(metaObject, &quot;createTime&quot;, () -&gt; LocalDateTime.now(), LocalDateTime.class); // 起始版本 3.3.3(推荐)</span><br><span class="line">        // 或者</span><br><span class="line">        this.fillStrategy(metaObject, &quot;createTime&quot;, LocalDateTime.now()); // 也可以使用(3.3.0 该方法有bug)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void updateFill(MetaObject metaObject) &#123;</span><br><span class="line">        log.info(&quot;start update fill ....&quot;);</span><br><span class="line">        this.strictUpdateFill(metaObject, &quot;updateTime&quot;, LocalDateTime.class, LocalDateTime.now()); // 起始版本 3.3.0(推荐)</span><br><span class="line">        // 或者</span><br><span class="line">        this.strictUpdateFill(metaObject, &quot;updateTime&quot;, () -&gt; LocalDateTime.now(), LocalDateTime.class); // 起始版本 3.3.3(推荐)</span><br><span class="line">        // 或者</span><br><span class="line">        this.fillStrategy(metaObject, &quot;updateTime&quot;, LocalDateTime.now()); // 也可以使用(3.3.0 该方法有bug)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>填充原理是直接给entity的属性设置值!!!<br>注解则是指定该属性在对应情况下必有值,如果无值则入库会是null<br>MetaObjectHandler提供的默认方法的策略均为:如果属性有值则不覆盖,如果填充值为null则不填充<br>字段必须声明TableField注解,属性fill选择对应策略,该声明告知Mybatis-Plus需要预留注入SQL字段<br>填充处理器MyMetaObjectHandler在 Spring Boot 中需要声明@Component或@Bean注入<br>要想根据注解FieldFill.xxx和字段名以及字段类型来区分必须使用父类的strictInsertFill或者strictUpdateFill方法<br>不需要根据任何来区分可以使用父类的fillStrategy方法</p>
+<h3 id="乐观锁"><a href="#乐观锁" class="headerlink" title="乐观锁"></a>乐观锁</h3><p>乐观锁的实现方式：  </p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">在数据库中添加version字段</span><br><span class="line">          ·  取出记录时，获取当前version  </span><br><span class="line">          ·  更新时，带上这个version  </span><br><span class="line">          ·  执行更新时， set version = newVersion where version = oldVersion  </span><br><span class="line">          ·  如果version不对，就更新失败  </span><br></pre></td></tr></table></figure>
+<p><strong>快速使用</strong></p>
+<ul>
+<li> 1.配置插件<br>spring xml方式:</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&lt;bean class=&quot;com.baomidou.mybatisplus.extension.plugins.inner.OptimisticLockerInnerInterceptor&quot; id=&quot;optimisticLockerInnerInterceptor&quot;/&gt;</span><br><span class="line">&lt;bean id=&quot;mybatisPlusInterceptor&quot; class=&quot;com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor&quot;&gt;</span><br><span class="line">    &lt;property name=&quot;interceptors&quot;&gt;</span><br><span class="line">        &lt;list&gt;</span><br><span class="line">            &lt;ref bean=&quot;optimisticLockerInnerInterceptor&quot;/&gt;</span><br><span class="line">        &lt;/list&gt;</span><br><span class="line">    &lt;/property&gt;</span><br><span class="line">&lt;/bean&gt;</span><br></pre></td></tr></table></figure>
+
+<p>spring boot注解方式:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">@Bean</span><br><span class="line">public MybatisPlusInterceptor mybatisPlusInterceptor() &#123;</span><br><span class="line">    MybatisPlusInterceptor interceptor = new MybatisPlusInterceptor();</span><br><span class="line">    interceptor.addInnerInterceptor(new OptimisticLockerInnerInterceptor());</span><br><span class="line">    return interceptor;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li> 2.在实体类的字段上加上@Version注解</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">@Version</span><br><span class="line">private Integer version;</span><br></pre></td></tr></table></figure>
+
+<p><strong>说明:</strong><br>支持的数据类型只有:int,Integer,long,Long,Date,Timestamp,LocalDateTime<br>整数类型下 newVersion = oldVersion + 1  newVersion 会回写到 entity 中<br><strong>仅支持 updateById(id) 与 update(entity, wrapper) 方法</strong><br>在 update(entity, wrapper) 方法下, wrapper 不能复用!!!</p>
+ 
+      <!-- reward -->
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <div class="declare">
+      <ul class="post-copyright">
+        <li>
+          <i class="ri-copyright-line"></i>
+          <strong>Copyright： </strong>
+          
+          Copyright is owned by the author. For commercial reprints, please contact the author for authorization. For non-commercial reprints, please indicate the source.
+          
+        </li>
+      </ul>
+    </div>
+    
+    <footer class="article-footer">
+       
+<div class="share-btn">
+      <span class="share-sns share-outer">
+        <i class="ri-share-forward-line"></i>
+        分享
+      </span>
+      <div class="share-wrap">
+        <i class="arrow"></i>
+        <div class="share-icons">
+          
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="ri-weibo-fill"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="ri-wechat-fill"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="ri-qq-fill"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="ri-douban-line"></i>
+          </a>
+          <!-- <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a> -->
+          
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="ri-facebook-circle-fill"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="ri-twitter-fill"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="ri-google-fill"></i>
+          </a>
+        </div>
+      </div>
+</div>
+
+<div class="wx-share-modal">
+    <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://example.com/2021/07/23/Spring/mybatis-plus%E5%BF%AB%E9%80%9F%E5%BC%80%E5%A7%8B/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div id="share-mask"></div>  
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mybatis-plus/" rel="tag">mybatis-plus</a></li></ul>
+
+    </footer>
+  </div>
+
+   
+  <nav class="article-nav">
+    
+      <a href="/2021/07/23/Spring/mybatis-plus%E7%9A%84%E9%80%86%E5%90%91%E5%B7%A5%E7%A8%8B/" class="article-nav-link">
+        <strong class="article-nav-caption">上一篇</strong>
+        <div class="article-nav-title">
+          
+            mybatis-plus的逆向工程
+          
+        </div>
+      </a>
+    
+    
+      <a href="/2021/07/23/JAVA%E5%9F%BA%E7%A1%80/Lambda%E5%92%8CStream%E6%B5%81/" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">Lambda和流</div>
+      </a>
+    
+  </nav>
+
+   
+<!-- valine评论 -->
+<div id="vcomments-box">
+  <div id="vcomments"></div>
+</div>
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js"></script>
+<script>
+  new Valine({
+    el: "#vcomments",
+    app_id: "",
+    app_key: "",
+    path: window.location.pathname,
+    avatar: "monsterid",
+    placeholder: "给我的文章加点评论吧~",
+    recordIP: true,
+  });
+  const infoEle = document.querySelector("#vcomments .info");
+  if (infoEle && infoEle.childNodes && infoEle.childNodes.length > 0) {
+    infoEle.childNodes.forEach(function (item) {
+      item.parentNode.removeChild(item);
+    });
+  }
+</script>
+<style>
+  #vcomments-box {
+    padding: 5px 30px;
+  }
+
+  @media screen and (max-width: 800px) {
+    #vcomments-box {
+      padding: 5px 0px;
+    }
+  }
+
+  #vcomments-box #vcomments {
+    background-color: #fff;
+  }
+
+  .v .vlist .vcard .vh {
+    padding-right: 20px;
+  }
+
+  .v .vlist .vcard {
+    padding-left: 10px;
+  }
+</style>
+
+ 
+   
+     
+</article>
+
+</section>
+      <footer class="footer">
+  <div class="outer">
+    <ul>
+      <li>
+        Copyrights &copy;
+        2015-2021
+        <i class="ri-heart-fill heart_icon"></i> John Doe
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+        
+        
+        Powered by <a href="https://hexo.io" target="_blank">Hexo</a>
+        <span class="division">|</span>
+        Theme - <a href="https://github.com/Shen-Yu/hexo-theme-ayer" target="_blank">Ayer</a>
+        
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+        
+        <span>
+  <span><i class="ri-user-3-fill"></i>Visitors:<span id="busuanzi_value_site_uv"></span></span>
+  <span class="division">|</span>
+  <span><i class="ri-eye-fill"></i>Views:<span id="busuanzi_value_page_pv"></span></span>
+</span>
+        
+      </li>
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      <li>
+        <!-- cnzz统计 -->
+        
+        <script type="text/javascript" src='https://s9.cnzz.com/z_stat.php?id=1278069914&amp;web_id=1278069914'></script>
+        
+      </li>
+    </ul>
+  </div>
+</footer>
+      <div class="float_btns">
+        <div class="totop" id="totop">
+  <i class="ri-arrow-up-line"></i>
+</div>
+
+<div class="todark" id="todark">
+  <i class="ri-moon-line"></i>
+</div>
+
+      </div>
+    </main>
+    <aside class="sidebar on">
+      <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/images/ayer-side.svg" alt="一叶随风"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">主页</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/archives">归档</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/categories">分类</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/tags">标签</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/tags/%E6%97%85%E8%A1%8C/">旅行</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" target="_blank" rel="noopener" href="http://shenyu-vip.lofter.com">摄影</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/friends">友链</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/2019/about">关于我</a>
+    </li>
+    
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      
+      <a class="nav-item-link nav-item-search"  title="Search">
+        <i class="ri-search-line"></i>
+      </a>
+      
+      
+      <a class="nav-item-link" target="_blank" href="/atom.xml" title="RSS Feed">
+        <i class="ri-rss-line"></i>
+      </a>
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+    </aside>
+    <div id="mask"></div>
+
+<!-- #reward -->
+<div id="reward">
+  <span class="close"><i class="ri-close-line"></i></span>
+  <p class="reward-p"><i class="ri-cup-line"></i>请我喝杯咖啡吧~</p>
+  <div class="reward-box">
+    
+    <div class="reward-item">
+      <img class="reward-img" src="https://cdn.jsdelivr.net/gh/Shen-Yu/cdn/img/alipay.jpg">
+      <span class="reward-type">支付宝</span>
+    </div>
+    
+    
+    <div class="reward-item">
+      <img class="reward-img" src="https://cdn.jsdelivr.net/gh/Shen-Yu/cdn/img/wechat.jpg">
+      <span class="reward-type">微信</span>
+    </div>
+    
+  </div>
+</div>
+    
+<script src="/js/jquery-2.0.3.min.js"></script>
+ 
+<script src="/js/lazyload.min.js"></script>
+
+<!-- Tocbot -->
+ 
+<script src="/js/tocbot.min.js"></script>
+
+<script>
+  tocbot.init({
+    tocSelector: ".tocbot",
+    contentSelector: ".article-entry",
+    headingSelector: "h1, h2, h3, h4, h5, h6",
+    hasInnerContainers: true,
+    scrollSmooth: true,
+    scrollContainer: "main",
+    positionFixedSelector: ".tocbot",
+    positionFixedClass: "is-position-fixed",
+    fixedSidebarOffset: "auto",
+  });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.js"></script>
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.css"
+/>
+<script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js"></script>
+
+<script src="/dist/main.js"></script>
+
+<!-- ImageViewer -->
+ <!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" style="display:none" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css">
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"></script>
+
+<script>
+    function viewer_init() {
+        let pswpElement = document.querySelectorAll('.pswp')[0];
+        let $imgArr = document.querySelectorAll(('.article-entry img:not(.reward-img)'))
+
+        $imgArr.forEach(($em, i) => {
+            $em.onclick = () => {
+                // slider展开状态
+                // todo: 这样不好，后面改成状态
+                if (document.querySelector('.left-col.show')) return
+                let items = []
+                $imgArr.forEach(($em2, i2) => {
+                    let img = $em2.getAttribute('data-idx', i2)
+                    let src = $em2.getAttribute('data-target') || $em2.getAttribute('src')
+                    let title = $em2.getAttribute('alt')
+                    // 获得原图尺寸
+                    const image = new Image()
+                    image.src = src
+                    items.push({
+                        src: src,
+                        w: image.width || $em2.width,
+                        h: image.height || $em2.height,
+                        title: title
+                    })
+                })
+                var gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, {
+                    index: parseInt(i)
+                });
+                gallery.init()
+            }
+        })
+    }
+    viewer_init()
+</script> 
+<!-- MathJax -->
+
+<!-- Katex -->
+
+<!-- busuanzi  -->
+ 
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+ 
+<!-- ClickLove -->
+
+<!-- ClickBoom1 -->
+
+<!-- ClickBoom2 -->
+
+<!-- CodeCopy -->
+ 
+<link rel="stylesheet" href="/css/clipboard.css">
+ <script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
+<script>
+  function wait(callback, seconds) {
+    var timelag = null;
+    timelag = window.setTimeout(callback, seconds);
+  }
+  !function (e, t, a) {
+    var initCopyCode = function(){
+      var copyHtml = '';
+      copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+      copyHtml += '<i class="ri-file-copy-2-line"></i><span>COPY</span>';
+      copyHtml += '</button>';
+      $(".highlight .code pre").before(copyHtml);
+      $(".article pre code").before(copyHtml);
+      var clipboard = new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        let $btn = $(e.trigger);
+        $btn.addClass('copied');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-checkbox-circle-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPIED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-checkbox-circle-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+      clipboard.on('error', function(e) {
+        e.clearSelection();
+        let $btn = $(e.trigger);
+        $btn.addClass('copy-failed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-time-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPY FAILED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-time-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+    }
+    initCopyCode();
+  }(window, document);
+</script>
+ 
+<!-- CanvasBackground -->
+
+<script>
+  if (window.mermaid) {
+    mermaid.initialize({ theme: "forest" });
+  }
+</script>
+
+
+    
+  </div>
+</body>
+
+</html>
